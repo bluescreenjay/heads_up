@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#1a0f2e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <title>Heads Up!</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="motion-permission" class="overlay" hidden>
+      <div class="permission-card">
+        <h2>Motion access needed</h2>
+        <p>
+          This game uses your phone&rsquo;s tilt to mark <strong>correct</strong>
+          (tilt down) and <strong>pass</strong> (tilt up). Allow motion sensors
+          when prompted.
+        </p>
+        <button type="button" id="enable-motion" class="btn btn-primary">
+          Enable motion
+        </button>
+      </div>
+    </div>
+
+    <div id="app">
+      <header class="app-header">
+        <h1>Heads Up!</h1>
+        <p class="tagline">Tilt down = correct &middot; Tilt up = pass</p>
+      </header>
+
+      <section id="screen-home" class="screen screen-active">
+        <h2>Choose a deck</h2>
+        <p class="hint">
+          Add <code>.txt</code> files to the <code>decks/</code> folder (one
+          word or phrase per line). Decks appear automatically.
+        </p>
+        <ul id="deck-list" class="deck-list" aria-live="polite"></ul>
+        <p id="deck-empty" class="empty-state" hidden>
+          No decks found. Add a <code>.txt</code> file to <code>decks/</code>.
+        </p>
+
+        <label class="field">
+          <span>Round length</span>
+          <select id="round-duration">
+            <option value="30">30 seconds</option>
+            <option value="60" selected>60 seconds</option>
+            <option value="90">90 seconds</option>
+            <option value="120">2 minutes</option>
+          </select>
+        </label>
+
+        <button type="button" id="start-game" class="btn btn-primary" disabled>
+          Start round
+        </button>
+      </section>
+
+      <section id="screen-ready" class="screen" hidden>
+        <div class="ready-card">
+          <h2>Get ready</h2>
+          <p>
+            Hold the phone to your forehead, screen facing your friends.
+            Landscape works best.
+          </p>
+          <p class="countdown" id="ready-countdown">3</p>
+          <p class="hint">Keep the phone steady to calibrate tilt…</p>
+        </div>
+      </section>
+
+      <section id="screen-play" class="screen" hidden>
+        <div class="play-hud">
+          <span id="timer" class="timer">60</span>
+          <span id="score" class="score">0 correct</span>
+        </div>
+        <div class="card-area">
+          <p id="current-word" class="word" aria-live="assertive">—</p>
+          <p id="feedback" class="feedback" aria-live="polite"></p>
+        </div>
+        <div class="tilt-legend">
+          <span class="tilt-up">&#8593; Pass</span>
+          <span class="tilt-down">&#8595; Correct</span>
+        </div>
+      </section>
+
+      <section id="screen-results" class="screen" hidden>
+        <h2>Time&rsquo;s up!</h2>
+        <dl class="results-stats">
+          <div>
+            <dt>Correct</dt>
+            <dd id="result-correct">0</dd>
+          </div>
+          <div>
+            <dt>Passed</dt>
+            <dd id="result-passed">0</dd>
+          </div>
+          <div>
+            <dt>Skipped</dt>
+            <dd id="result-skipped">0</dd>
+          </div>
+        </dl>
+        <ul id="result-words" class="result-words"></ul>
+        <button type="button" id="play-again" class="btn btn-primary">
+          Play again
+        </button>
+        <button type="button" id="back-home" class="btn btn-secondary">
+          Change deck
+        </button>
+      </section>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

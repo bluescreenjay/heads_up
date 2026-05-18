@@ -1,0 +1,21 @@
+# Animals — example deck (lines starting with # are ignored)
+Elephant
+Giraffe
+Penguin
+Octopus
+Kangaroo
+Butterfly
+Hammerhead Shark
+Sloth
+Platypus
+Chameleon
+Flamingo
+Wombat
+Narwhal
+Tarantula
+Hummingbird
+Armadillo
+Peacock
+Walrus
+Cheetah
+Koala
