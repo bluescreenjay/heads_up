@@ -13,5 +13,5 @@ export type GuessResult = "correct" | "pass";
 
 export type RoundEntry = {
   word: string;
-  result: GuessResult | "timeout";
+  result: GuessResult;
 };

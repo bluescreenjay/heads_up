@@ -55,6 +55,6 @@ function png(size, r, g, b) {
 }
 
 fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(path.join(outDir, "icon-192.png"), png(192, 255, 107, 157));
-fs.writeFileSync(path.join(outDir, "icon-512.png"), png(512, 255, 209, 102));
+fs.writeFileSync(path.join(outDir, "icon-192.png"), png(192, 240, 78, 35));
+fs.writeFileSync(path.join(outDir, "icon-512.png"), png(512, 245, 241, 232));
 console.log("Wrote PWA icons to public/icons/");
