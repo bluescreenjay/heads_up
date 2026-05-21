@@ -86,8 +86,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["icons/*.png"],
       manifest: {
-        name: "Heads Up!",
-        short_name: "Heads Up",
+        name: "Flippit!",
+        short_name: "Flippit",
         description: "Guess the word on your forehead — tilt down for correct, up to pass.",
         theme_color: "#F5F1E8",
         background_color: "#F5F1E8",

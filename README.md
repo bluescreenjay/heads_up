@@ -1,6 +1,6 @@
-# Heads Up! (PWA)
+# Flippit! (PWA)
 
-A party-game clone of **Heads Up!** — hold the phone to your forehead, get clues from friends, and **tilt down** for a correct guess or **tilt up** to pass.
+A party-game clone of **Flippit!** — hold the phone to your forehead, get clues from friends, and **tilt down** for a correct guess or **tilt up** to pass.
 
 ## Quick start
 

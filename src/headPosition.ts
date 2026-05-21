@@ -40,7 +40,7 @@ function mean(values: number[]): number {
 export { POSITION_TIMEOUT_MS };
 
 /**
- * Tracks device orientation to detect landscape + forehead ("Heads Up") pose.
+ * Tracks device orientation to detect landscape + forehead ("Flippit!") pose.
  * Auto-calibrates when the player holds a steady landscape position.
  */
 export class HeadPositionMonitor {
