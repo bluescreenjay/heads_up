@@ -122,6 +122,7 @@ export class Game {
 
     this.playing = true;
     this.acceptingInput = true;
+    this.tilt.recalibrate();
     this.tilt.onAction((action) => this.recordGuess(action));
 
     this.timerId = window.setInterval(() => {

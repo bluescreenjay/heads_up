@@ -1,3 +1,9 @@
+import {
+  isLandscapeForeheadPose,
+  isLandscapeOrientation,
+  nearCalibratedPose,
+} from "./orientation";
+
 export type HeadPositionState = {
   isLandscape: boolean;
   isOnForehead: boolean;
@@ -14,25 +20,6 @@ const CALIBRATION_SAMPLES = 18;
 const CALIBRATION_TOLERANCE = 28;
 const POSITION_TIMEOUT_MS = 15_000;
 
-function isLandscapeOrientation(): boolean {
-  const type = screen.orientation?.type;
-  if (type) return type.startsWith("landscape");
-  return window.matchMedia("(orientation: landscape)").matches;
-}
-
-/** Heuristic forehead pose: landscape, screen roughly vertical facing away. */
-function matchesForeheadHeuristic(beta: number, gamma: number): boolean {
-  const absBeta = Math.abs(beta);
-  const absGamma = Math.abs(gamma);
-
-  return (
-    absBeta >= 40 &&
-    absBeta <= 125 &&
-    absGamma >= 50 &&
-    absGamma <= 130
-  );
-}
-
 function mean(values: number[]): number {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
@@ -40,7 +27,7 @@ function mean(values: number[]): number {
 export { POSITION_TIMEOUT_MS };
 
 /**
- * Tracks device orientation to detect landscape + forehead ("Flippit!") pose.
+ * Tracks device orientation to detect landscape + forehead pose.
  * Auto-calibrates when the player holds a steady landscape position.
  */
 export class HeadPositionMonitor {
@@ -74,7 +61,7 @@ export class HeadPositionMonitor {
   private computeState(beta: number, gamma: number): HeadPositionState {
     const isLandscape = isLandscapeOrientation();
 
-    if (isLandscape && matchesForeheadHeuristic(beta, gamma)) {
+    if (isLandscape && isLandscapeForeheadPose(beta, gamma)) {
       this.tryCalibrate(beta, gamma);
     }
 
@@ -109,13 +96,16 @@ export class HeadPositionMonitor {
     if (!isLandscape) return false;
 
     if (this.calibratedBeta != null && this.calibratedGamma != null) {
-      return (
-        Math.abs(beta - this.calibratedBeta) <= CALIBRATION_TOLERANCE &&
-        Math.abs(gamma - this.calibratedGamma) <= CALIBRATION_TOLERANCE
+      return nearCalibratedPose(
+        beta,
+        gamma,
+        this.calibratedBeta,
+        this.calibratedGamma,
+        CALIBRATION_TOLERANCE,
       );
     }
 
-    return matchesForeheadHeuristic(beta, gamma);
+    return isLandscapeForeheadPose(beta, gamma);
   }
 
   private tryCalibrate(beta: number, gamma: number): void {

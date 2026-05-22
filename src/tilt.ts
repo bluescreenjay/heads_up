@@ -1,9 +1,15 @@
+import {
+  foreheadTiltAxis,
+  isLandscapeForeheadPose,
+  isLandscapeOrientation,
+} from "./orientation";
+
 export type TiltAction = "correct" | "pass";
 
 export type TiltDetectorOptions = {
-  /** Degrees below baseline = correct (phone tipped forward / face down). */
+  /** Degrees below baseline = correct (phone tipped toward chin). */
   correctThreshold?: number;
-  /** Degrees above baseline = pass (phone tipped back / face up). */
+  /** Degrees above baseline = pass (phone tipped toward ceiling). */
   passThreshold?: number;
   /** Minimum ms between triggers. */
   cooldownMs?: number;
@@ -14,8 +20,8 @@ export type TiltDetectorOptions = {
 type Listener = (action: TiltAction) => void;
 
 /**
- * Uses DeviceOrientation `beta` (front-back tilt). Calibrate while the phone
- * is held steady on the forehead; tilting down triggers correct, up triggers pass.
+ * Calibrates the landscape-forehead nod axis (`beta` ≈ 0 at rest). Tilting
+ * down triggers correct, up triggers pass.
  */
 export class TiltDetector {
   private baseline: number | null = null;
@@ -32,10 +38,19 @@ export class TiltDetector {
 
   private readonly onOrientation = (event: DeviceOrientationEvent): void => {
     const beta = event.beta;
-    if (beta == null || Number.isNaN(beta)) return;
+    const gamma = event.gamma;
+    if (beta == null || gamma == null || Number.isNaN(beta) || Number.isNaN(gamma)) {
+      return;
+    }
+
+    if (!isLandscapeOrientation()) return;
+
+    const tilt = foreheadTiltAxis(beta);
 
     if (this.calibrating) {
-      this.calibrationBuffer.push(beta);
+      if (!isLandscapeForeheadPose(beta, gamma)) return;
+
+      this.calibrationBuffer.push(tilt);
       if (this.calibrationBuffer.length >= this.calibrationSamples) {
         this.baseline =
           this.calibrationBuffer.reduce((a, b) => a + b, 0) /
@@ -49,7 +64,7 @@ export class TiltDetector {
 
     if (!this.armed || this.baseline == null) return;
 
-    const delta = beta - this.baseline;
+    const delta = tilt - this.baseline;
     const now = performance.now();
     if (now - this.lastTrigger < this.cooldownMs) return;
 
@@ -66,8 +81,8 @@ export class TiltDetector {
   };
 
   constructor(options: TiltDetectorOptions = {}) {
-    this.correctThreshold = options.correctThreshold ?? 28;
-    this.passThreshold = options.passThreshold ?? 28;
+    this.correctThreshold = options.correctThreshold ?? 22;
+    this.passThreshold = options.passThreshold ?? 22;
     this.cooldownMs = options.cooldownMs ?? 900;
     this.calibrationSamples = options.calibrationSamples ?? 24;
   }
@@ -102,6 +117,14 @@ export class TiltDetector {
     this.calibrating = true;
     this.armed = false;
     window.addEventListener("deviceorientation", this.onOrientation, true);
+  }
+
+  /** Re-sample baseline while the phone is on the forehead in landscape. */
+  recalibrate(): void {
+    this.baseline = null;
+    this.calibrationBuffer = [];
+    this.calibrating = true;
+    this.armed = false;
   }
 
   onAction(listener: Listener): void {
